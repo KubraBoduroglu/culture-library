@@ -5,7 +5,7 @@ import jakarta.persistence.Id
 import org.hibernate.annotations.GenericGenerator
 
 data class BookIdDto @JvmOverloads constructor(
-        val id: String? = "",
+        val bookId: String? = "",
         val isbn: String
 ){
     companion object {
