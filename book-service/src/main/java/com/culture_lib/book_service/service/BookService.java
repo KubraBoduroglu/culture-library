@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class BookService {
+    // final çünkü test yazarken bu nesneleri kolayca BookService constructor'ına inject edebilmek için.
     private  final BookRepository repository;
 
     public BookService(BookRepository repository) {
