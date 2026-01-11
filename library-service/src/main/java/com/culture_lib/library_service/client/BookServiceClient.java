@@ -16,4 +16,6 @@ public interface BookServiceClient {
 
     @GetMapping("/book/{id}")
     ResponseEntity<BookDto> getBookById(@PathVariable String id);
+
+
 }
