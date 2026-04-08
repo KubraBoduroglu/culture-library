@@ -12,15 +12,16 @@ import java.util.List;
 
 @SpringBootApplication
 // @EnableEurekaClient not needed anymore, @EnableDiscoveryClient also can be used
+@EnableDiscoveryClient
 public class BookServiceApplication implements CommandLineRunner {
 
 	private final BookRepository repository;
 
-    public BookServiceApplication(BookRepository repository) {
-        this.repository = repository;
-    }
+	public BookServiceApplication(BookRepository repository) {
+		this.repository = repository;
+	}
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(BookServiceApplication.class, args);
 	}
 
@@ -33,6 +34,5 @@ public class BookServiceApplication implements CommandLineRunner {
 		List<Book> bookList = repository.saveAll(Arrays.asList(book1, book2, book3));
 
 		System.out.println(bookList);
-
 	}
 }

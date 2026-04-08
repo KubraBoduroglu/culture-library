@@ -1,5 +1,6 @@
 package com.culture_lib.library_service.client;
 
+import com.culture_lib.library_service.exception.BookNotFoundException;
 import com.culture_lib.library_service.exception.ExceptionMessage;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -14,7 +15,7 @@ public class RetrieveMessageErrorDecoder implements ErrorDecoder {
 
     private final ErrorDecoder errorDecoder = new Default();
 
-    // creates exceptin message from response
+    // creates exception message from response body (response that comes from book-service)
     @Override
     public Exception decode(String methodKey, Response response) {
         ExceptionMessage exceptionMessage = null;
@@ -27,7 +28,12 @@ public class RetrieveMessageErrorDecoder implements ErrorDecoder {
         } catch (IOException exception) {
             return new Exception(exception.getMessage());
         }
-        return null;
+        switch (response.status()) {
+            case 404:
+                throw new BookNotFoundException(exceptionMessage);
+            default:
+                return errorDecoder.decode(methodKey, response);
+        }
     }
 
 
