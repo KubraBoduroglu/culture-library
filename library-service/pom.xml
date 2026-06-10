@@ -83,6 +83,12 @@
 			<version>2.11.0</version>
 		</dependency>
 
+		<!-- Source: https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-circuitbreaker-resilience4j -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-circuitbreaker-resilience4j</artifactId>
+		</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

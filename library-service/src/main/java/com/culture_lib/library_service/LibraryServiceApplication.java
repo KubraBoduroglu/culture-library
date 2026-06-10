@@ -16,6 +16,7 @@ public class LibraryServiceApplication {
 		SpringApplication.run(LibraryServiceApplication.class, args);
 	}
 
+	/* will not use any more since using resilience4j
 	//Feign Client Error Handling
 	@Bean
 	public ErrorDecoder errorDecoder() {
@@ -25,5 +26,8 @@ public class LibraryServiceApplication {
 	@Bean
 	Logger.Level feignLoggerLevel() {
 		return Logger.Level.FULL;
-	}
+	}*/
+
+
+
 }
