@@ -111,13 +111,21 @@ GET http://localhost:8080/v1/library/{id}
 * Default immutability. 
 * No need for Lombok. No headaches for lombok version incompatibility and lombok generated classes.
 
-### System Design Until Now
-![img.png](img.png)
-
 ### Api Gateway 
 * Scale Up: More than one instance of services to be able to handle requests.
 * `Load Balancing`: Redirect requests to service instances according to load.
 * Web Interceptors + Web Filters
+
+
+#### Spring Actuator
+* Actuator configs are placed under `management` keyword in application.yml and application.properties files.
+* If nothing exposed explicitly, `health` endpoint exposed by default.
+* Metrics are drived from Actuator endpoints.
+
+### System Design Until Now
+![img.png](img.png)
+
+#### Distributed Log Trace
 * 
 
 ------------  
