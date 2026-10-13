@@ -8,9 +8,9 @@
 * What can you use instead of eureka server? 
   * docker-compose for services you don't change much + application-LOCAL.yml for you debug  
   * Or application-LOCAL.yml for every service + run from ide
-* (https://gemini.google.com/app/1bd058cd678bc9b3)
-* application-LOCAL.yml dosyanı .gitignore'a ekle
+* Add application-LOCAL.yml to .gitignore
 * swagger api doc
+* Migrate from Zipkin to OTEL
 
 ## Install
 
@@ -115,18 +115,27 @@ GET http://localhost:8080/v1/library/{id}
 * Scale Up: More than one instance of services to be able to handle requests.
 * `Load Balancing`: Redirect requests to service instances according to load.
 * Web Interceptors + Web Filters
+* Start 2 library-service instance from terminal: 
+ ````bash
+mvn spring-boot:run
+````
 
+### System Design Until Now
+![img.png](img.png)
 
 #### Spring Actuator
 * Actuator configs are placed under `management` keyword in application.yml and application.properties files.
 * If nothing exposed explicitly, `health` endpoint exposed by default.
 * Metrics are drived from Actuator endpoints.
 
-### System Design Until Now
-![img.png](img.png)
-
 #### Distributed Log Trace
-* 
+
+* Used for tracing request logs between services. 
+* Start Zipkin via Docker.
+````bash
+docker run -d -p 9411:9411 openzipkin/zipkin
+````
+* Once the server is running, you can view traces with the Zipkin UI at http://your_host:9411/zipkin/.
 
 ------------  
 
@@ -136,3 +145,6 @@ GET http://localhost:8080/v1/library/{id}
 2. [[TechThursday] - Microservice #2 - Spring Cloud Eureka Server/Client, Feign Client](https://www.youtube.com/live/Iv4v_1rdC9E?si=MlI8ZWQKcQCwY8XY)
 3. [[TechThursday] - Microservice #3 - Spring Boot Feign Client Error Handling & Fault Tolerance](https://www.youtube.com/live/k9UTf8aaT44?si=ZFGs7FT3ki8UosRg)
 4. [resilience4j](https://resilience4j.readme.io/docs/getting-started)
+5. [[TechThursday] Microservice #4 - API Gateway, Spring Actuator, Distributed Log Trace, Zipkin](https://www.youtube.com/live/pSs9v_uo2Qo?si=TZCbyMTL0YbK9W92)
+6. https://hub.docker.com/r/openzipkin/zipkin
+7. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
