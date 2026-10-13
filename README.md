@@ -8,9 +8,9 @@
 * What can you use instead of eureka server? 
   * docker-compose for services you don't change much + application-LOCAL.yml for you debug  
   * Or application-LOCAL.yml for every service + run from ide
-* (https://gemini.google.com/app/1bd058cd678bc9b3)
-* application-LOCAL.yml dosyanı .gitignore'a ekle
+* Add application-LOCAL.yml to .gitignore
 * swagger api doc
+* Migrate from Zipkin to OTEL
 
 ## Install
 
@@ -70,9 +70,9 @@ GET http://localhost:8080/v1/library/{id}
 
 ## DEVELOPMENT DOCUMENTATION
 
-### ADD EUREKA SERVER TO PROJECT
+### Eureka Server
 
-* Eureka Server is a service registry,a service discovery tool that allows services to find and communicate with each other
+* Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
 * EurekaServerApplication should have the '@EnableEurekaServer' annotation in eureka-server module.  
 * eureka-server module should have the 'spring-cloud-starter-netflix-eureka-server' dependency.  
 * Other modules needed '@EnableEurekaClient' or ' @EnableDiscoveryClient' before, but not anymore.  
@@ -81,14 +81,16 @@ GET http://localhost:8080/v1/library/{id}
 
 * Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
 
-### ADD FEIGN CLIENT TO PROJECT
+### Communication Between Services 
+#### Feign Client
 
 * Services that communicate with each other needs to have 'spring-cloud-starter-openfeign' dependency.  
 * '@FeignClient' annotation should be used by clients.  
 * Feign Client is an interface.  
-* '@EnableFeignClients' annotation should be used by clients.  
+* '@EnableFeignClients' annotation should be used by clients.
 
-### FEIGN CLIENT ERROR HANDLING
+### What If No Book Found from BookService
+#### Error Handling with Feign Client
 
 * RetrieveMessageErrorDecoder should be added to LibraryServiceApplication.class to handled by Spring Boot.
 * Record creates immutable final classess with constructors and getter setters. Allows us to get rid of boilerplate code.  
@@ -96,7 +98,7 @@ GET http://localhost:8080/v1/library/{id}
   * Since Record is final, it cannot be used by Spring JPA. Spring JPA needs one constructor without parameters.  
   * Record cannot be extended.
 
-### FAULT TOLERANCE AND FALLBACK METHODS
+#### Fault Tolerance and Fallback Methods
 
 * Another way for fault tolerance is fallback methods with resilience4j.
 * resilience4j dependency, `CircuitBreaker` annotation and fallback methods were added.
@@ -105,9 +107,35 @@ GET http://localhost:8080/v1/library/{id}
 * Parameters of fallback methods are always feign client parameters and exception message.
 * Default values should be inserted if no valid isbn sent.
 
-### WHY KOTLIN?
+### Why Kotlin?
 * Default immutability. 
 * No need for Lombok. No headaches for lombok version incompatibility and lombok generated classes.
+
+### Api Gateway 
+* Scale Up: More than one instance of services to be able to handle requests.
+* `Load Balancing`: Redirect requests to service instances according to load.
+* Web Interceptors + Web Filters
+* Start 2 library-service instance from terminal: 
+ ````bash
+mvn spring-boot:run
+````
+
+### System Design Until Now
+![img.png](img.png)
+
+#### Spring Actuator
+* Actuator configs are placed under `management` keyword in application.yml and application.properties files.
+* If nothing exposed explicitly, `health` endpoint exposed by default.
+* Metrics are drived from Actuator endpoints.
+
+#### Distributed Log Trace
+
+* Used for tracing request logs between services. 
+* Start Zipkin via Docker.
+````bash
+docker run -d -p 9411:9411 openzipkin/zipkin
+````
+* Once the server is running, you can view traces with the Zipkin UI at http://your_host:9411/zipkin/.
 
 ------------  
 
@@ -117,3 +145,6 @@ GET http://localhost:8080/v1/library/{id}
 2. [[TechThursday] - Microservice #2 - Spring Cloud Eureka Server/Client, Feign Client](https://www.youtube.com/live/Iv4v_1rdC9E?si=MlI8ZWQKcQCwY8XY)
 3. [[TechThursday] - Microservice #3 - Spring Boot Feign Client Error Handling & Fault Tolerance](https://www.youtube.com/live/k9UTf8aaT44?si=ZFGs7FT3ki8UosRg)
 4. [resilience4j](https://resilience4j.readme.io/docs/getting-started)
+5. [[TechThursday] Microservice #4 - API Gateway, Spring Actuator, Distributed Log Trace, Zipkin](https://www.youtube.com/live/pSs9v_uo2Qo?si=TZCbyMTL0YbK9W92)
+6. https://hub.docker.com/r/openzipkin/zipkin
+7. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
