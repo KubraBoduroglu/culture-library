@@ -141,7 +141,16 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 * Using config repository, instead of change and deploy every microservice, config initialization and change done in central repo.
 * SprinCloudCOnfigServer -> configs
 * Configs can be stored in 3 different ways: file based in project classpath, git repo, Vault.
-* 
+* To fetch config file:
+`````bash
+http:localhost/8888/book-service/dev
+`````
+* Test which config file is in use:
+`````bash
+http:localhost/8889/v1/library/count
+`````
+
+* If git repo option has been used and config files has been changed, send post request to `actuator/refresh` endpoint and add `@RefreshScope` to controller for config change takes place.  
 
 ### System Design Until Now
 ![img_1.png](img_1.png)

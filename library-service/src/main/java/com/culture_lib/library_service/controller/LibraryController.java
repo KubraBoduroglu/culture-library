@@ -5,6 +5,7 @@ import com.culture_lib.library_service.dto.LibraryDto;
 import com.culture_lib.library_service.service.LibraryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,9 @@ import java.util.List;
 @RefreshScope
 @RequestMapping("/v1/library")
 public class LibraryController {
+
+    @Value("${library-service.book.count}")
+    private String count;
 
     Logger logger = LoggerFactory.getLogger(LibraryController.class);
     private final LibraryService libraryService;
@@ -48,5 +52,10 @@ public class LibraryController {
     @GetMapping
     public ResponseEntity<List<String>> getAllLibraries() {
         return ResponseEntity.ok(libraryService.getAllLibraries());
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<String> getCount() {
+        return ResponseEntity.ok("Library count is" + count);
     }
 }
