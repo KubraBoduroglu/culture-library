@@ -123,12 +123,12 @@ mvn spring-boot:run
 ### System Design Until Now
 ![img.png](img.png)
 
-#### Spring Actuator
+### Spring Actuator
 * Actuator configs are placed under `management` keyword in application.yml and application.properties files.
 * If nothing exposed explicitly, `health` endpoint exposed by default.
 * Metrics are drived from Actuator endpoints.
 
-#### Distributed Log Trace
+### Distributed Log Trace
 
 * Used for tracing request logs between services. 
 * Start Zipkin via Docker.
@@ -137,6 +137,16 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 ````
 * Once the server is running, you can view traces with the Zipkin UI at http://your_host:9411/zipkin/.
 
+### Centralized Configuration with Spring Cloud Config
+* Using config repository, instead of change and deploy every microservice, config initialization and change done in central repo.
+* SprinCloudCOnfigServer -> configs
+* Configs can be stored in 3 different ways: file based in project classpath, git repo, Vault.
+* 
+
+### System Design Until Now
+![img_1.png](img_1.png)
+
+* Why Gradle -> faster build, groovy scrip instead of xml
 ------------  
 
 ## RESOURCES
