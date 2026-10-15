@@ -10,11 +10,13 @@
   * Or application-LOCAL.yml for every service + run from ide
 * Add application-LOCAL.yml to .gitignore
 * swagger api doc
-* Migrate from Zipkin to OTEL
+* Migrate from Zipkin to OTEL(LGTM) and/or ELK
 * docker-compose for Vault
 * Add VAULT_ADDR and VAULT_TOKEN to env var
 * Release notes, wiki
 * Redis
+* Add config yml files
+* Notification service with RabbitMQ or Kafka
 
 ## Install
 
@@ -77,27 +79,27 @@ GET http://localhost:8080/v1/library/{id}
 ### Eureka Server
 
 * Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
-* EurekaServerApplication should have the '@EnableEurekaServer' annotation in eureka-server module.  
-* eureka-server module should have the 'spring-cloud-starter-netflix-eureka-server' dependency.  
-* Other modules needed '@EnableEurekaClient' or ' @EnableDiscoveryClient' before, but not anymore.  
-* Other modules should have the 'spring-cloud-starter-netflix-eureka-client' dependency.
-* Other modules should have the 'eureka.client.service-url.default-zone' in application.properties.  
+* EurekaServerApplication should have the `@EnableEurekaServer` annotation in eureka-server module.  
+* eureka-server module should have the `spring-cloud-starter-netflix-eureka-server` dependency.  
+* Other modules needed `@EnableEurekaClient` or ` @EnableDiscoveryClient` before, but not anymore.  
+* Other modules should have the `spring-cloud-starter-netflix-eureka-client` dependency.
+* Other modules should have the `eureka.client.service-url.default-zone` in application.properties.  
 
 * Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
 
 ### Communication Between Services 
 #### Feign Client
 
-* Services that communicate with each other needs to have 'spring-cloud-starter-openfeign' dependency.  
-* '@FeignClient' annotation should be used by clients.  
+* Services that communicate with each other needs to have `spring-cloud-starter-openfeign` dependency.  
+* `@FeignClient` annotation should be used by clients.  
 * Feign Client is an interface.  
-* '@EnableFeignClients' annotation should be used by clients.
+* `@EnableFeignClients` annotation should be used by clients.
 
 ### What If No Book Found from BookService
 #### Error Handling with Feign Client
 
 * RetrieveMessageErrorDecoder should be added to LibraryServiceApplication.class to handled by Spring Boot.
-* Record creates immutable final classess with constructors and getter setters. Allows us to get rid of boilerplate code.  
+* Record creates immutable final classes with constructors and getter setters. Allows us to get rid of boilerplate code.  
 * Why use Kotlin instead of Record for entities? 
   * Since Record is final, it cannot be used by Spring JPA. Spring JPA needs one constructor without parameters.  
   * Record cannot be extended.
@@ -110,6 +112,7 @@ GET http://localhost:8080/v1/library/{id}
 * Netflix Hystrix is deprecated, used resilience4j.
 * Parameters of fallback methods are always feign client parameters and exception message.
 * Default values should be inserted if no valid isbn sent.
+* `CircuitBreaker` -> If one of the services is is not responding, the circuit breaker stops repeatedly sending requests to it. This prevents wasted resources, long wait times, and system-wide failures.
 
 ### Why Kotlin?
 * Default immutability. 
@@ -118,6 +121,8 @@ GET http://localhost:8080/v1/library/{id}
 ### Api Gateway 
 * Scale Up: More than one instance of services to be able to handle requests.
 * `Load Balancing`: Redirect requests to service instances according to load.
+* Routing in `application.yml` in `api-gateway`.
+* `id` in `routes` should be same with service names. 
 * Web Interceptors + Web Filters
 * Start 2 library-service instance from terminal: 
  ````bash
@@ -187,3 +192,4 @@ http:localhost/8889/v1/library/count
 7. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
 8. [#5 - Spring Cloud Config ile Centralized Configuration](https://www.youtube.com/live/knZe2Vbk7HE?si=YC85CyRod4IX3_Bk)
 9. [#6 - Spring Cloud Config ile Vault Integration](https://www.youtube.com/live/PlU4YKtuAfw?si=0dnpROWSlI_vvQNt)
+10. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
