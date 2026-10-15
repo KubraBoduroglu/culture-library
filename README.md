@@ -6,11 +6,13 @@
 ## TODO
 
 * What can you use instead of eureka server? 
-  * docker-compose for services you don't change much + application-LOCAL.yml for you debug  
+  * docker-compose for services you don`t change much + application-LOCAL.yml for you debug  
   * Or application-LOCAL.yml for every service + run from ide
 * Add application-LOCAL.yml to .gitignore
 * swagger api doc
-* Migrate from Zipkin to OTEL
+* Migrate from Zipkin to OTEL(LGTM) and/or ELK 
+* Add config yml files
+* Notification service with RabbitMQ or Kafka
 
 ## Install
 
@@ -50,7 +52,7 @@ Request Body:
 
 ````
 
-* Send this id and an isbn that doesn't in library to create new record in library.
+* Send this id and an isbn that doesn`t in library to create new record in library.
 * Default values should be inserted if no valid isbn sent. 
 
 ````bash
@@ -73,27 +75,27 @@ GET http://localhost:8080/v1/library/{id}
 ### Eureka Server
 
 * Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
-* EurekaServerApplication should have the '@EnableEurekaServer' annotation in eureka-server module.  
-* eureka-server module should have the 'spring-cloud-starter-netflix-eureka-server' dependency.  
-* Other modules needed '@EnableEurekaClient' or ' @EnableDiscoveryClient' before, but not anymore.  
-* Other modules should have the 'spring-cloud-starter-netflix-eureka-client' dependency.
-* Other modules should have the 'eureka.client.service-url.default-zone' in application.properties.  
+* EurekaServerApplication should have the `@EnableEurekaServer` annotation in eureka-server module.  
+* eureka-server module should have the `spring-cloud-starter-netflix-eureka-server` dependency.  
+* Other modules needed `@EnableEurekaClient` or ` @EnableDiscoveryClient` before, but not anymore.  
+* Other modules should have the `spring-cloud-starter-netflix-eureka-client` dependency.
+* Other modules should have the `eureka.client.service-url.default-zone` in application.properties.  
 
-* Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
+* Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn`t work anymore. 
 
 ### Communication Between Services 
 #### Feign Client
 
-* Services that communicate with each other needs to have 'spring-cloud-starter-openfeign' dependency.  
-* '@FeignClient' annotation should be used by clients.  
+* Services that communicate with each other needs to have `spring-cloud-starter-openfeign` dependency.  
+* `@FeignClient` annotation should be used by clients.  
 * Feign Client is an interface.  
-* '@EnableFeignClients' annotation should be used by clients.
+* `@EnableFeignClients` annotation should be used by clients.
 
 ### What If No Book Found from BookService
 #### Error Handling with Feign Client
 
 * RetrieveMessageErrorDecoder should be added to LibraryServiceApplication.class to handled by Spring Boot.
-* Record creates immutable final classess with constructors and getter setters. Allows us to get rid of boilerplate code.  
+* Record creates immutable final classes with constructors and getter setters. Allows us to get rid of boilerplate code.  
 * Why use Kotlin instead of Record for entities? 
   * Since Record is final, it cannot be used by Spring JPA. Spring JPA needs one constructor without parameters.  
   * Record cannot be extended.
@@ -106,6 +108,7 @@ GET http://localhost:8080/v1/library/{id}
 * Netflix Hystrix is deprecated, used resilience4j.
 * Parameters of fallback methods are always feign client parameters and exception message.
 * Default values should be inserted if no valid isbn sent.
+* `CircuitBreaker` -> If one of the services is is not responding, the circuit breaker stops repeatedly sending requests to it. This prevents wasted resources, long wait times, and system-wide failures.
 
 ### Why Kotlin?
 * Default immutability. 
@@ -114,6 +117,8 @@ GET http://localhost:8080/v1/library/{id}
 ### Api Gateway 
 * Scale Up: More than one instance of services to be able to handle requests.
 * `Load Balancing`: Redirect requests to service instances according to load.
+* Routing in `application.yml` in `api-gateway`.
+* `id` in `routes` should be same with service names. 
 * Web Interceptors + Web Filters
 * Start 2 library-service instance from terminal: 
  ````bash
@@ -167,3 +172,4 @@ http:localhost/8889/v1/library/count
 5. [[TechThursday] Microservice #4 - API Gateway, Spring Actuator, Distributed Log Trace, Zipkin](https://www.youtube.com/live/pSs9v_uo2Qo?si=TZCbyMTL0YbK9W92)
 6. https://hub.docker.com/r/openzipkin/zipkin
 7. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
+8. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
