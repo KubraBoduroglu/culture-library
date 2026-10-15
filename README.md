@@ -6,11 +6,15 @@
 ## TODO
 
 * What can you use instead of eureka server? 
-  * docker-compose for services you don`t change much + application-LOCAL.yml for you debug  
+  * docker-compose for services you don't change much + application-LOCAL.yml for you debug  
   * Or application-LOCAL.yml for every service + run from ide
 * Add application-LOCAL.yml to .gitignore
 * swagger api doc
-* Migrate from Zipkin to OTEL(LGTM) and/or ELK 
+* Migrate from Zipkin to OTEL(LGTM) and/or ELK
+* docker-compose for Vault
+* Add VAULT_ADDR and VAULT_TOKEN to env var
+* Release notes, wiki
+* Redis
 * Add config yml files
 * Notification service with RabbitMQ or Kafka
 
@@ -52,7 +56,7 @@ Request Body:
 
 ````
 
-* Send this id and an isbn that doesn`t in library to create new record in library.
+* Send this id and an isbn that doesn't in library to create new record in library.
 * Default values should be inserted if no valid isbn sent. 
 
 ````bash
@@ -81,7 +85,7 @@ GET http://localhost:8080/v1/library/{id}
 * Other modules should have the `spring-cloud-starter-netflix-eureka-client` dependency.
 * Other modules should have the `eureka.client.service-url.default-zone` in application.properties.  
 
-* Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn`t work anymore. 
+* Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
 
 ### Communication Between Services 
 #### Feign Client
@@ -150,17 +154,31 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 `````bash
 http:localhost/8888/book-service/dev
 `````
-* Test which config file is in use:
+* Test which value from which config file is in use:
 `````bash
 http:localhost/8889/v1/library/count
 `````
-
-* If git repo option has been used and config files has been changed, send post request to `actuator/refresh` endpoint and add `@RefreshScope` to controller for config change takes place.  
+* If git repo option has been used and config files has been changed, send post request to `actuator/refresh` endpoint and add `@RefreshScope` to controller for config change takes place.
+* Changes occur without the need of restarting the service.
+`````bash
+POST http:localhost/8090/actuator/refresh
+`````
 
 ### System Design Until Now
 ![img_1.png](img_1.png)
 
 * Why Gradle -> faster build, groovy scrip instead of xml
+
+### Spring Cloud Config and Vault Integration
+* Kullanıcı adı, şifre gibi secret'ları tek ve güvenli bir yerden yönetmek için. 
+* Projelerin içinde hassas bilgileri tutmamış olacağız.
+* `config` directory not in use anymore.
+* Unseal Vault
+* Test which value from which config file/Vault is in use:
+`````bash
+http:localhost/8889/v1/library/count
+`````
+
 ------------  
 
 ## RESOURCES
@@ -172,4 +190,6 @@ http:localhost/8889/v1/library/count
 5. [[TechThursday] Microservice #4 - API Gateway, Spring Actuator, Distributed Log Trace, Zipkin](https://www.youtube.com/live/pSs9v_uo2Qo?si=TZCbyMTL0YbK9W92)
 6. https://hub.docker.com/r/openzipkin/zipkin
 7. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
-8. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
+8. [#5 - Spring Cloud Config ile Centralized Configuration](https://www.youtube.com/live/knZe2Vbk7HE?si=YC85CyRod4IX3_Bk)
+9. [#6 - Spring Cloud Config ile Vault Integration](https://www.youtube.com/live/PlU4YKtuAfw?si=0dnpROWSlI_vvQNt)
+10. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
