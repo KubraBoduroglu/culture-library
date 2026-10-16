@@ -76,7 +76,7 @@ GET http://localhost:8080/v1/library/{id}
 
 ## DEVELOPMENT DOCUMENTATION
 
-### Eureka Server
+### Eureka Server and Service Discovery
 
 * Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
 * EurekaServerApplication should have the `@EnableEurekaServer` annotation in eureka-server module.  
@@ -86,6 +86,7 @@ GET http://localhost:8080/v1/library/{id}
 * Other modules should have the `eureka.client.service-url.default-zone` in application.properties.  
 
 * Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
+* `@LoadBalanced` -> Client Side Load Balancing 
 
 ### Communication Between Services using Feign Client
 
@@ -205,3 +206,4 @@ http:localhost/8889/v1/library/count
 4. https://hub.docker.com/r/openzipkin/zipkin
 5. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
 6. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
+7. [Spring Boot Microservices Full Course](https://youtube.com/playlist?list=PLSVW22jAG8pBnhAdq9S8BpLnZ0_jVBj0c&si=MjIrZT4cAmYFCXYg)
