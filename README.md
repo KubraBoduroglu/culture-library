@@ -87,13 +87,15 @@ GET http://localhost:8080/v1/library/{id}
 
 * Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
 
-### Communication Between Services 
-#### Feign Client
+### Communication Between Services using Feign Client
 
 * Services that communicate with each other needs to have `spring-cloud-starter-openfeign` dependency.  
 * `@FeignClient` annotation should be used by clients.  
 * Feign Client is an interface.  
 * `@EnableFeignClients` annotation should be used by clients.
+* When adding book to the library, LibraryService send request to the BookService with isbn. LibraryService never holds all book info but only holds book ids, BookService holds the info about books.
+
+![img_2.png](img_2.png)
 
 ### What If No Book Found from BookService
 #### Error Handling with Feign Client
@@ -117,6 +119,8 @@ GET http://localhost:8080/v1/library/{id}
 ### Why Kotlin?
 * Default immutability. 
 * No need for Lombok. No headaches for lombok version incompatibility and lombok generated classes.
+
+![img_3.png](img_3.png)
 
 ### Api Gateway 
 * Scale Up: More than one instance of services to be able to handle requests.
@@ -172,6 +176,7 @@ POST http:localhost/8090/actuator/refresh
 ### Spring Cloud Config and Vault Integration
 * Kullanıcı adı, şifre gibi secret'ları tek ve güvenli bir yerden yönetmek için. 
 * Projelerin içinde hassas bilgileri tutmamış olacağız.
+* Using Vault instead of Spring Cloud Config.
 * `config` directory not in use anymore.
 * Unseal Vault
 * Test which value from which config file/Vault is in use:
@@ -179,17 +184,24 @@ POST http:localhost/8090/actuator/refresh
 http:localhost/8889/v1/library/count
 `````
 
+### Communication Between Services using SpringBoot and gRPC
+* gRPC instead of Feign Client.
+* gRPC not use http, uses proto buff (http6), a byte protocol.
+* Proto buffs written in gRPC library, maven uses this library and creates interfaces and models.
+* gRPC client (stub) uses this interfaces that the implementations has been done in gRPC server. (Reminds me old soap stubs.)
+* gRPC request vs rest request:
+  * Rest request: `curl GET localhost:8081/v1/library`
+  * gRPC request : `grpcurl com.kitaplik.book-service.BookGrpcService.getBookByIsbn -d isbn 123432`
+* gRPC library transforms byte arrays coming from these requests to objects.
+* 
+
 ------------  
 
 ## RESOURCES
 
-1. [Spring Boot Microservices Project Example - Part 3 | Service Discovery](https://youtu.be/0TQliqoX6Kc?si=Szqo5KhgyXZUqPW-&t=209)  
-2. [[TechThursday] - Microservice #2 - Spring Cloud Eureka Server/Client, Feign Client](https://www.youtube.com/live/Iv4v_1rdC9E?si=MlI8ZWQKcQCwY8XY)
-3. [[TechThursday] - Microservice #3 - Spring Boot Feign Client Error Handling & Fault Tolerance](https://www.youtube.com/live/k9UTf8aaT44?si=ZFGs7FT3ki8UosRg)
-4. [resilience4j](https://resilience4j.readme.io/docs/getting-started)
-5. [[TechThursday] Microservice #4 - API Gateway, Spring Actuator, Distributed Log Trace, Zipkin](https://www.youtube.com/live/pSs9v_uo2Qo?si=TZCbyMTL0YbK9W92)
-6. https://hub.docker.com/r/openzipkin/zipkin
-7. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
-8. [#5 - Spring Cloud Config ile Centralized Configuration](https://www.youtube.com/live/knZe2Vbk7HE?si=YC85CyRod4IX3_Bk)
-9. [#6 - Spring Cloud Config ile Vault Integration](https://www.youtube.com/live/PlU4YKtuAfw?si=0dnpROWSlI_vvQNt)
-10. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
+1. [Spring Microservices](https://youtube.com/playlist?list=PLCp1YoRkzkpZ3OinTeT2-8A1B7HAujTAu&si=OvpAnIzaqpY0Npu-)
+2. [Spring Boot Microservices Project Example - Part 3 | Service Discovery](https://youtu.be/0TQliqoX6Kc?si=Szqo5KhgyXZUqPW-&t=209)
+3. [resilience4j](https://resilience4j.readme.io/docs/getting-started)
+4. https://hub.docker.com/r/openzipkin/zipkin
+5. https://docs.spring.io/spring-boot/reference/actuator/tracing.html#actuator.micrometer-tracing.tracer-implementations.brave-zipkin
+6. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
