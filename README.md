@@ -17,6 +17,7 @@
 * Redis
 * Add config yml files
 * Notification service with RabbitMQ or Kafka
+* Is it enough yo initialiaze eureka dependency only in config server?
 
 ## Install
 
@@ -120,9 +121,10 @@ GET http://localhost:8080/v1/library/{id}
 
 ### Api Gateway 
 * Scale Up: More than one instance of services to be able to handle requests.
+* Can also serve for authorization, security and load balancing aspects.
 * `Load Balancing`: Redirect requests to service instances according to load.
-* Routing in `application.yml` in `api-gateway`.
-* `id` in `routes` should be same with service names. 
+* Routing in `application.yml` in `api-gateway`. Instance ports can change, so instead of changing in every service we do the routing in api-gateway.
+* `id` in `routes` should be same with service names.
 * Web Interceptors + Web Filters
 * Start 2 library-service instance from terminal: 
  ````bash
@@ -148,7 +150,7 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 
 ### Centralized Configuration with Spring Cloud Config
 * Using config repository, instead of change and deploy every microservice, config initialization and change done in central repo.
-* SprinCloudCOnfigServer -> configs
+* SprinCloudConfigServer -> configs
 * Configs can be stored in 3 different ways: file based in project classpath, git repo, Vault.
 * To fetch config file:
 `````bash
