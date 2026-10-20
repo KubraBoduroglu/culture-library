@@ -80,13 +80,19 @@ GET http://localhost:8080/v1/library/{id}
 ### Eureka Server
 
 * Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
-* EurekaServerApplication should have the `@EnableEurekaServer` annotation in eureka-server module.  
-* eureka-server module should have the `spring-cloud-starter-netflix-eureka-server` dependency.  
-* Other modules needed `@EnableEurekaClient` or ` @EnableDiscoveryClient` before, but not anymore.  
-* Other modules should have the `spring-cloud-starter-netflix-eureka-client` dependency.
-* Other modules should have the `eureka.client.service-url.default-zone` in application.properties.  
+* In eureka-server module: 
+  * Add `spring-cloud-starter-netflix-eureka-server` dependency.
+  * Main class have the `@EnableEurekaServer` annotation.
+* In other modules that will register in eureka-server: 
+  * `spring-cloud-starter-netflix-eureka-client` dependency.
+  * In earlier versions should have `@EnableEurekaClient` or ` @EnableDiscoveryClient` before, but not needed anymore.
+  * `eureka.client.service-url.default-zone` in application.properties.  
 
 * Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
+* Eureka UI:
+````bash
+http:localhost/8761
+````
 
 ### Communication Between Services 
 #### Feign Client
@@ -107,10 +113,10 @@ GET http://localhost:8080/v1/library/{id}
 
 #### Fault Tolerance and Fallback Methods
 
-* Another way for fault tolerance is fallback methods with resilience4j.
-* resilience4j dependency, `CircuitBreaker` annotation and fallback methods were added.
+* Another way for fault tolerance is fallback methods with `resilience4j`.
+* `resilience4j` dependency, `CircuitBreaker` annotation and fallback methods were added.
 * Creating different fallback situations for different errors.
-* Netflix Hystrix is deprecated, used resilience4j.
+* Netflix Hystrix is deprecated, used `resilience4j`.
 * Parameters of fallback methods are always feign client parameters and exception message.
 * Default values should be inserted if no valid isbn sent.
 * `CircuitBreaker` -> If one of the services is is not responding, the circuit breaker stops repeatedly sending requests to it. This prevents wasted resources, long wait times, and system-wide failures.
@@ -137,7 +143,7 @@ mvn spring-boot:run
 ### Spring Actuator
 * Actuator configs are placed under `management` keyword in application.yml and application.properties files.
 * If nothing exposed explicitly, `health` endpoint exposed by default.
-* Metrics are drived from Actuator endpoints.
+* Metrics are derived from Actuator endpoints.
 
 ### Distributed Log Trace
 
@@ -150,7 +156,7 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 
 ### Centralized Configuration with Spring Cloud Config
 * Using config repository, instead of change and deploy every microservice, config initialization and change done in central repo.
-* SprinCloudConfigServer -> configs
+* SpringCloudConfigServer -> configs
 * Configs can be stored in 3 different ways: file based in project classpath, git repo, Vault.
 * To fetch config file:
 `````bash
@@ -175,11 +181,21 @@ POST http:localhost/8090/actuator/refresh
 * Kullanıcı adı, şifre gibi secret'ları tek ve güvenli bir yerden yönetmek için. 
 * Projelerin içinde hassas bilgileri tutmamış olacağız.
 * `config` directory not in use anymore.
+* To run vault server:
+````bash
+docker compose up
+````
+
+* Vault UI:
+````bash
+http:localhost/8200/ui/vault
+````
+
 * Unseal Vault
 * Test which value from which config file/Vault is in use:
-`````bash
+````bash
 http:localhost/8889/v1/library/count
-`````
+````
 
 ------------  
 
@@ -195,3 +211,5 @@ http:localhost/8889/v1/library/count
 8. [#5 - Spring Cloud Config ile Centralized Configuration](https://www.youtube.com/live/knZe2Vbk7HE?si=YC85CyRod4IX3_Bk)
 9. [#6 - Spring Cloud Config ile Vault Integration](https://www.youtube.com/live/PlU4YKtuAfw?si=0dnpROWSlI_vvQNt)
 10. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
+11. [Vault Docker Image](https://hub.docker.com/r/hashicorp/vault)
+12. [Run Vault on Docker](https://developer.hashicorp.com/vault/docs/deploy/run-on-docker)
