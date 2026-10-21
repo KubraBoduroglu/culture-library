@@ -48,13 +48,18 @@ Start the server
 
 ## Usage
 
+* Run eureka server, gateway service. 
 * Run library service and create new library.
+
+- Start 
+  C:\Program Files\Java\jdk-21\bin\java.exe -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 com.culture_lib.book_service.BookServiceApplication
+
+  cd /d D:\private_git_repos\culture-library\book-service\src\main\java\com\culture_lib\book_service\ && mvn
 
 ````bash
 POST http://localhost:8080/v1/library/
 Request Body:
 {id}
-
 ````
 
 * Send this id and an isbn that doesn't in library to create new record in library.
@@ -65,7 +70,6 @@ PUT http://localhost:8080/v1/library/
 Request Body:
 {id}
 {isbn}
-
 ````
 
 * Check if books added in the library.
@@ -179,19 +183,53 @@ POST http:localhost/8090/actuator/refresh
 
 ### Spring Cloud Config and Vault Integration
 * Kullanıcı adı, şifre gibi secret'ları tek ve güvenli bir yerden yönetmek için. 
+* Manage secrets from secure vault.
 * Projelerin içinde hassas bilgileri tutmamış olacağız.
 * `config` directory not in use anymore.
-* To run vault server:
-````bash
-docker compose up
-````
+* Add `vault.json`
+* First time starting vault server from docker compose:
+  ````bash
+  # Alternative 1
+  docker-compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" up -d
+  
+  # Alternative 2
+  cd /d D:\private_git_repos\culture-library\vault-docker-dev && docker-compose -f docker-compose.yml up -d
+  
+  # Alternative 3
+  cd D:\git_repos\ggecici\server\.docker
+  docker compose up -d
+  ````
+* List docker compose containers
+  ````bash
+  docker-compose ps
+  ````
+
+* Start docker compose
+  ````bash
+  # Alternative 1
+  docker compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" start
+  
+  # Alternative 2
+  cd /d D:\private_git_repos\culture-library\vault-docker-dev && docker compose start
+  
+  # Alternative 3
+  cd D:\private_git_repos\culture-library\vault-docker-dev
+  docker compose start
+  ````
+  
+* Stop docker compose
+  ````bash
+  # Alternative 1
+  cd /d D:\git_repos\ggecici\server\.docker && docker compose stop  
+  # Alternative 2
+  docker compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" stop  
+  ````
 
 * Vault UI:
 ````bash
-http:localhost/8200/ui/vault
+http://localhost:8200/ui````
 ````
-
-* Unseal Vault
+* Unseal Vault after vault server up and running.
 * Test which value from which config file/Vault is in use:
 ````bash
 http:localhost/8889/v1/library/count
