@@ -17,7 +17,7 @@
 * Redis
 * Add config yml files
 * Notification service with RabbitMQ or Kafka
-* Is it enough yo initialiaze eureka dependency only in config server?
+* Is it enough to initialize eureka dependency only in config server?
 
 ## Install
 
@@ -81,9 +81,10 @@ GET http://localhost:8080/v1/library/{id}
 
 ## DEVELOPMENT DOCUMENTATION
 
-### Eureka Server
+### Service Discovery Using Eureka Server
 
-* Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
+* Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other.
+* Service discovery: Proccess of automatically detecting devices and services on a network. 
 * In eureka-server module: 
   * Add `spring-cloud-starter-netflix-eureka-server` dependency.
   * Main class have the `@EnableEurekaServer` annotation.
@@ -160,6 +161,7 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 
 ### Centralized Configuration with Spring Cloud Config
 * Using config repository, instead of change and deploy every microservice, config initialization and change done in central repo.
+* No need to deploy application again for new config changes.
 * SpringCloudConfigServer -> configs
 * Configs can be stored in 3 different ways: file based in project classpath, git repo, Vault.
 * To fetch config file:
@@ -227,14 +229,15 @@ POST http:localhost/8090/actuator/refresh
 
 * Vault UI:
 ````bash
-http://localhost:8200/ui````
+http://localhost:8200/ui
 ````
 * Unseal Vault after vault server up and running.
-* Test which value from which config file/Vault is in use:
+* Test which value from which config file/Vault is in use from getCount endpoint:
 ````bash
 http:localhost/8889/v1/library/count
 ````
-
+* Needs actuator/refresh if value in vault changes.
+* 
 ------------  
 
 ## RESOURCES
@@ -251,3 +254,6 @@ http:localhost/8889/v1/library/count
 10. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
 11. [Vault Docker Image](https://hub.docker.com/r/hashicorp/vault)
 12. [Run Vault on Docker](https://developer.hashicorp.com/vault/docs/deploy/run-on-docker)
+13. [Telusko Microservices Tutorial for Beginners](https://youtu.be/h6aDu9e2L_s?si=DkuAOkV1JQoMGWRr)
+14. [navinreddy20/MicroserviceTutorials](https://github.com/navinreddy20/MicroserviceTutorials.git)
+15. [How to Use Vault with Docker](https://oneuptime.com/blog/post/2026-02-02-vault-docker/view)
