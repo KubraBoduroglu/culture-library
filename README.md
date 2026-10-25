@@ -212,11 +212,11 @@ POST http:localhost/8090/actuator/refresh
   docker compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" start
   
   # Alternative 2
-  cd /d D:\private_git_repos\culture-library\vault-docker-dev && docker compose start
+  # cd /d D:\private_git_repos\culture-library\vault-docker-dev && docker compose start
   
   # Alternative 3
-  cd D:\private_git_repos\culture-library\vault-docker-dev
-  docker compose start
+  # cd D:\private_git_repos\culture-library\vault-docker-dev
+  # docker compose start
   ````
   
 * Stop docker compose
