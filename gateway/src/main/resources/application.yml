@@ -1,20 +1,22 @@
+
 spring:
   application:
     name: gateway-service
+
   cloud:
     gateway:
-      routes:
-        - id: book-service
-          uri: lb://book-service
-          predicates:
-            - Path=/v1/book/**
-        - id: library-service
-          uri: lb://library-service
-          predicates:
-            - Path=/v1/library/**
-      discovery:
-        locator:
-          enabled: true
+      server:
+        webmvc:
+          routes:
+            - id: book-service
+              uri: lb://book-service
+              predicates:
+                - Path=/v1/book/**
+
+            - id: library-service
+              uri: lb://library-service
+              predicates:
+                - Path=/v1/library/**
 
 server:
   port: 8889
@@ -33,7 +35,10 @@ management:
     web:
       exposure:
         include: "*"
-        exclude: info
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411
+
+  tracing:
+    sampling:
+      probability: 1.0
+    export:
+      zipkin:
+        endpoint: http://localhost:9411/api/v2/spans

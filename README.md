@@ -17,7 +17,7 @@
 * Redis
 * Add config yml files
 * Notification service with RabbitMQ or Kafka
-* Is it enough yo initialiaze eureka dependency only in config server?
+* Is it enough to initialize eureka dependency only in config server?
 
 ## Install
 
@@ -48,13 +48,18 @@ Start the server
 
 ## Usage
 
+* Run eureka server, gateway service. 
 * Run library service and create new library.
+
+- Start 
+  C:\Program Files\Java\jdk-21\bin\java.exe -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 com.culture_lib.book_service.BookServiceApplication
+
+  cd /d D:\private_git_repos\culture-library\book-service\src\main\java\com\culture_lib\book_service\ && mvn
 
 ````bash
 POST http://localhost:8080/v1/library/
 Request Body:
 {id}
-
 ````
 
 * Send this id and an isbn that doesn't in library to create new record in library.
@@ -65,7 +70,6 @@ PUT http://localhost:8080/v1/library/
 Request Body:
 {id}
 {isbn}
-
 ````
 
 * Check if books added in the library.
@@ -77,16 +81,23 @@ GET http://localhost:8080/v1/library/{id}
 
 ## DEVELOPMENT DOCUMENTATION
 
-### Eureka Server
+### Service Discovery Using Eureka Server
 
-* Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other
-* EurekaServerApplication should have the `@EnableEurekaServer` annotation in eureka-server module.  
-* eureka-server module should have the `spring-cloud-starter-netflix-eureka-server` dependency.  
-* Other modules needed `@EnableEurekaClient` or ` @EnableDiscoveryClient` before, but not anymore.  
-* Other modules should have the `spring-cloud-starter-netflix-eureka-client` dependency.
-* Other modules should have the `eureka.client.service-url.default-zone` in application.properties.  
+* Eureka Server is a `service registry`, a service discovery tool that allows services to find and communicate with each other.
+* Service discovery: Proccess of automatically detecting devices and services on a network. 
+* In eureka-server module: 
+  * Add `spring-cloud-starter-netflix-eureka-server` dependency.
+  * Main class have the `@EnableEurekaServer` annotation.
+* In other modules that will register in eureka-server: 
+  * `spring-cloud-starter-netflix-eureka-client` dependency.
+  * In earlier versions should have `@EnableEurekaClient` or ` @EnableDiscoveryClient` before, but not needed anymore.
+  * `eureka.client.service-url.default-zone` in application.properties.  
 
 * Every eureka client has a local service registry. And even if eureka server not up and running these client services can communicate with each other using local service registries. It is  called  a fallback mechanism. If ip ports of the services change this solution doesn't work anymore. 
+* Eureka UI:
+````bash
+http:localhost/8761
+````
 
 ### Communication Between Services 
 #### Feign Client
@@ -107,10 +118,10 @@ GET http://localhost:8080/v1/library/{id}
 
 #### Fault Tolerance and Fallback Methods
 
-* Another way for fault tolerance is fallback methods with resilience4j.
-* resilience4j dependency, `CircuitBreaker` annotation and fallback methods were added.
+* Another way for fault tolerance is fallback methods with `resilience4j`.
+* `resilience4j` dependency, `CircuitBreaker` annotation and fallback methods were added.
 * Creating different fallback situations for different errors.
-* Netflix Hystrix is deprecated, used resilience4j.
+* Netflix Hystrix is deprecated, used `resilience4j`.
 * Parameters of fallback methods are always feign client parameters and exception message.
 * Default values should be inserted if no valid isbn sent.
 * `CircuitBreaker` -> If one of the services is is not responding, the circuit breaker stops repeatedly sending requests to it. This prevents wasted resources, long wait times, and system-wide failures.
@@ -137,7 +148,7 @@ mvn spring-boot:run
 ### Spring Actuator
 * Actuator configs are placed under `management` keyword in application.yml and application.properties files.
 * If nothing exposed explicitly, `health` endpoint exposed by default.
-* Metrics are drived from Actuator endpoints.
+* Metrics are derived from Actuator endpoints.
 
 ### Distributed Log Trace
 
@@ -150,7 +161,8 @@ docker run -d -p 9411:9411 openzipkin/zipkin
 
 ### Centralized Configuration with Spring Cloud Config
 * Using config repository, instead of change and deploy every microservice, config initialization and change done in central repo.
-* SprinCloudConfigServer -> configs
+* No need to deploy application again for new config changes.
+* SpringCloudConfigServer -> configs
 * Configs can be stored in 3 different ways: file based in project classpath, git repo, Vault.
 * To fetch config file:
 `````bash
@@ -173,14 +185,59 @@ POST http:localhost/8090/actuator/refresh
 
 ### Spring Cloud Config and Vault Integration
 * Kullanıcı adı, şifre gibi secret'ları tek ve güvenli bir yerden yönetmek için. 
+* Manage secrets from secure vault.
 * Projelerin içinde hassas bilgileri tutmamış olacağız.
 * `config` directory not in use anymore.
-* Unseal Vault
-* Test which value from which config file/Vault is in use:
-`````bash
-http:localhost/8889/v1/library/count
-`````
+* Add `vault.json`
+* First time starting vault server from docker compose:
+  ````bash
+  # Alternative 1
+  docker-compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" up -d
+  
+  # Alternative 2
+  cd /d D:\private_git_repos\culture-library\vault-docker-dev && docker-compose -f docker-compose.yml up -d
+  
+  # Alternative 3
+  cd D:\git_repos\ggecici\server\.docker
+  docker compose up -d
+  ````
+* List docker compose containers
+  ````bash
+  docker-compose ps
+  ````
 
+* Start docker compose
+  ````bash
+  # Alternative 1
+  docker compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" start
+  
+  # Alternative 2
+  # cd /d D:\private_git_repos\culture-library\vault-docker-dev && docker compose start
+  
+  # Alternative 3
+  # cd D:\private_git_repos\culture-library\vault-docker-dev
+  # docker compose start
+  ````
+  
+* Stop docker compose
+  ````bash
+  # Alternative 1
+  cd /d D:\git_repos\ggecici\server\.docker && docker compose stop  
+  # Alternative 2
+  docker compose -f "D:\private_git_repos\culture-library\vault-docker-dev\docker-compose.yml" stop  
+  ````
+
+* Vault UI:
+````bash
+http://localhost:8200/ui
+````
+* Unseal Vault after vault server up and running.
+* Test which value from which config file/Vault is in use from getCount endpoint:
+````bash
+http:localhost/8889/v1/library/count
+````
+* Needs actuator/refresh if value in vault changes.
+* 
 ------------  
 
 ## RESOURCES
@@ -195,3 +252,8 @@ http:localhost/8889/v1/library/count
 8. [#5 - Spring Cloud Config ile Centralized Configuration](https://www.youtube.com/live/knZe2Vbk7HE?si=YC85CyRod4IX3_Bk)
 9. [#6 - Spring Cloud Config ile Vault Integration](https://www.youtube.com/live/PlU4YKtuAfw?si=0dnpROWSlI_vvQNt)
 10. [Java SpringCloud Microservice Egitimi](https://youtube.com/playlist?list=PLd0jsEi3hUAdKnXFDDop8V9WfBzHD5WLF&si=l0bV3vsBocxeuhbg)
+11. [Vault Docker Image](https://hub.docker.com/r/hashicorp/vault)
+12. [Run Vault on Docker](https://developer.hashicorp.com/vault/docs/deploy/run-on-docker)
+13. [Telusko Microservices Tutorial for Beginners](https://youtu.be/h6aDu9e2L_s?si=DkuAOkV1JQoMGWRr)
+14. [navinreddy20/MicroserviceTutorials](https://github.com/navinreddy20/MicroserviceTutorials.git)
+15. [How to Use Vault with Docker](https://oneuptime.com/blog/post/2026-02-02-vault-docker/view)

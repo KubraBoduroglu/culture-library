@@ -116,3 +116,4 @@ fabric.properties
 /.idea/
 .idea/*
 **/. idea
+/vault-docker-dev/vault-cluster-vault_2026-10-22T13_19_52.466Z.json

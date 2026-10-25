@@ -56,6 +56,6 @@ public class LibraryController {
 
     @GetMapping("/count")
     public ResponseEntity<String> getCount() {
-        return ResponseEntity.ok("Library count is" + count);
+        return ResponseEntity.ok("Library count is: " + count);
     }
 }
